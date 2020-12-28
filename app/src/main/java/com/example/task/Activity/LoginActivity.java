@@ -3,6 +3,7 @@ package com.example.task.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.task.R;
 import com.example.task.helpers.Constant;
 import com.example.task.helpers.SessionManager;
 import com.example.task.helpers.UrlHelper;
+import com.example.task.helpers.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        checkInternetConnection();
         sessionManager = new SessionManager(getApplicationContext());
         checkRole();
 
@@ -61,7 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         String role = detail_user.get("role");
         if(role != null){
             if(role.equals(Constant.ROLE_STAFF)){
-
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
             }else if(role.equals(Constant.ROLE_MANAGER)){
 
             }else if(role.equals(Constant.ROLE_DIRECTOR)){
@@ -70,6 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
+            finish();
         }
     }
 
@@ -118,6 +122,25 @@ public class LoginActivity extends AppCompatActivity {
 
 
         queue.add(req);
+    }
+
+    /**
+     * Check internet connection
+     */
+    private void checkInternetConnection(){
+        if(Utils.isNetworkAvailable(getApplication())){
+            AlertDialog alert = new AlertDialog
+                    .Builder(this)
+                    .setTitle(R.string.error_connection_internet)
+                    .setMessage(R.string.error_connection_internet)
+                    .setIcon(R.drawable.ic_launcher_foreground)
+                    .setCancelable(false)
+                    .setPositiveButton("OKE", (dialog, id) -> {
+                        // jika tombol diklik, maka akan menutup activity ini
+                        finish();
+                    }).create();
+            alert.show();
+        }
     }
 
 }
