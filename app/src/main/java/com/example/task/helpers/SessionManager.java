@@ -18,6 +18,7 @@ public class SessionManager {
     private static final  String id_user = "id_user";
     private static final  String username = "username";
     private static final  String role = "role";
+    private static final  String fcm_token = "fcm_token";
 
     public SessionManager(Context context){
         this.context = context;
@@ -25,11 +26,12 @@ public class SessionManager {
         editor = pref.edit();
     }
 
-    public void createSession(String id_user, String username, String role){
+    public void createSession(String id_user, String username, String role, String fcm_token){
         editor.putBoolean(is_login, true);
         editor.putString(this.id_user, id_user);
         editor.putString(this.username, username);
         editor.putString(this.role, role);
+        editor.putString(this.fcm_token, fcm_token);
         editor.commit();
     }
 
@@ -49,6 +51,7 @@ public class SessionManager {
         user.put(this.id_user, pref.getString(this.id_user, null));
         user.put(this.username, pref.getString(this.username, null));
         user.put(this.role, pref.getString(this.role, null));
+        user.put(this.fcm_token, pref.getString(this.fcm_token, null));
         return  user;
     }
 

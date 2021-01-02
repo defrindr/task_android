@@ -1,10 +1,10 @@
 
-package com.example.task.Model;
+package com.example.task.Model.Staff;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class AssignTo {
+public class AssignBy {
 
     @SerializedName("id")
     @Expose

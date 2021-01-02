@@ -25,6 +25,9 @@ import com.example.task.helpers.Constant;
 import com.example.task.helpers.SessionManager;
 import com.example.task.helpers.UrlHelper;
 import com.example.task.helpers.Utils;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,12 +51,11 @@ public class LoginActivity extends AppCompatActivity {
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                auth_user(usernameEditText.getText().toString(), passwordEditText.getText().toString(), loadingProgressBar);
-            }
+        loginButton.setOnClickListener(v -> {
+            loadingProgressBar.setVisibility(View.VISIBLE);
+            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult -> {
+                auth_user(usernameEditText.getText().toString(), passwordEditText.getText().toString(), instanceIdResult.getToken().toString(), loadingProgressBar);
+            });
         });
 
 
@@ -66,7 +68,8 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }else if(role.equals(Constant.ROLE_MANAGER)){
-
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
             }else if(role.equals(Constant.ROLE_DIRECTOR)){
 
             }else if(role.equals(Constant.ROLE_CEO)){
@@ -78,44 +81,41 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void auth_user(String username,String password, ProgressBar loadingProgressBar){
-
+    public void auth_user(String username,String password,String fcm_token, ProgressBar loadingProgressBar){
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
 
-        StringRequest req = new StringRequest(Request.Method.POST, UrlHelper.login, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                JSONObject jsonObject = null;
-                try {
-                    jsonObject = new JSONObject(response);
-                    if (jsonObject.getBoolean("success") == false){
-                        Toast.makeText(getApplicationContext(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-                    }else{
-                        JSONObject data_user = jsonObject.getJSONObject("data");
-                        sessionManager.createSession(data_user.getString("id"),
-                                data_user.getString("username"),
-                                data_user.getString("role_id"));
-                        checkRole();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        StringRequest req = new StringRequest(Request.Method.POST, UrlHelper.login, response -> {
+            JSONObject jsonObject = null;
+            try {
+//                Toast.makeText(getApplicationContext(), fcm_token, Toast.LENGTH_SHORT).show();
+                jsonObject = new JSONObject(response);
+                if (jsonObject.getBoolean("success") == false){
+                    Toast.makeText(getApplicationContext(), jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                }else{
+                    JSONObject data_user = jsonObject.getJSONObject("data");
+                    sessionManager.createSession(data_user.getString("id"),
+                            data_user.getString("username"),
+                            data_user.getString("role_id"),
+                            fcm_token);
+                    checkRole();
                 }
+            } catch (JSONException e) {
+                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
 
-                loadingProgressBar.setVisibility(View.INVISIBLE);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println(error);
-                Toast.makeText(getApplicationContext(), "Error", Toast.LENGTH_SHORT).show();
-                loadingProgressBar.setVisibility(View.INVISIBLE);
-            }
+            loadingProgressBar.setVisibility(View.INVISIBLE);
+        }, error -> {
+            System.out.println(error);
+            Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+            loadingProgressBar.setVisibility(View.INVISIBLE);
         }){
             @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
+            protected Map<String, String> getParams() {
                 HashMap<String, String> params = new HashMap<>();
                 params.put("username", username);
                 params.put("password", password);
+                params.put("fcm_token", fcm_token);
                 return params;
             }
         };

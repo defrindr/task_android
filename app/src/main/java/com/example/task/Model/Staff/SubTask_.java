@@ -1,5 +1,5 @@
 
-package com.example.task.Model;
+package com.example.task.Model.Staff;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -41,7 +41,7 @@ public class SubTask_ {
     private String status;
     @SerializedName("tanggal_pengajuan")
     @Expose
-    private String tanggalPengajuan;
+    private String  tanggalPengajuan;
     @SerializedName("tanggal_acc")
     @Expose
     private String tanggalAcc;
@@ -93,7 +93,7 @@ public class SubTask_ {
     }
 
     public String getDeadline() {
-        return this.deadline;
+        return deadline;
     }
 
     public void setDeadline(String deadline) {
@@ -140,7 +140,7 @@ public class SubTask_ {
         this.status = status;
     }
 
-    public String getTanggalPengajuan() {
+    public Object getTanggalPengajuan() {
         return tanggalPengajuan;
     }
 

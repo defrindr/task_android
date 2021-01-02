@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +30,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.task.Model.SubTask_;
+import com.example.task.Model.Staff.SubTask_;
 import com.example.task.R;
 import com.example.task.helpers.SessionManager;
 import com.example.task.helpers.UrlHelper;
@@ -96,34 +97,7 @@ public class DetailSubTaskFragment extends Fragment {
         pbLayout = root.findViewById(R.id.sub_task_detail_pblayout);
 
         scrollView.setVisibility(View.GONE);
-        if (getArguments() != null) {
-            id_sub_task = getArguments().getInt("id_sub_task");
-
-            RequestQueue queue = Volley.newRequestQueue(getContext());
-            StringRequest request = new StringRequest(Request.Method.GET, UrlHelper.view_sub_task + "?id=" + id_sub_task, (Response.Listener<String>) response -> {
-                Gson g = new Gson();
-                SubTask_ subTask = g.fromJson(response, SubTask_.class);
-                String status = subTask.getStatus();
-                linkDownloadFile = subTask.getFile();
-                tvTaskName.setText(subTask.getTask().getTaskName());
-                tvDescription.setText(subTask.getDescription());
-                tvAssignBy.setText(subTask.getAssignBy().getName());
-                tvDeadline.setText(subTask.getDeadline());
-                tvKomentar.setText(subTask.getKomentar());
-                tvStatus.setText(status);
-                if(linkDownloadFile.equals("-")){
-                    btnDownload.setVisibility(View.GONE);
-                }
-                if(status.toLowerCase().equals("perlu tindak lanjut") == false){
-                    form.setVisibility(View.GONE);
-                }
-                pbLayout.setVisibility(View.GONE);
-                scrollView.setVisibility(View.VISIBLE);
-            }, error -> {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            });
-            queue.add(request);
-        }
+        refreshPage();
     }
 
     protected void  buttonActions(){
@@ -199,6 +173,7 @@ public class DetailSubTaskFragment extends Fragment {
                         e.printStackTrace();
                     }
                     finishAction();
+                    refreshPage();
                 },
                 error -> {
                     Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
@@ -209,7 +184,7 @@ public class DetailSubTaskFragment extends Fragment {
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<>();
                 String description = (etDescription.getText().toString().equals("")) ? "-" : etDescription.getText().toString();
-                params.put("SubTask[keterangan]", description);
+                params.put("SubTask[description]", description);
 
                 return params;
             }
@@ -224,8 +199,49 @@ public class DetailSubTaskFragment extends Fragment {
         Volley.newRequestQueue(getContext()).add(volleyMultipartRequest);
     }
 
+    private void refreshPage() {
+
+        if (getArguments() != null) {
+            id_sub_task = getArguments().getInt("id_sub_task");
+            RequestQueue queue = Volley.newRequestQueue(getContext());
+            StringRequest request = new StringRequest(Request.Method.GET, UrlHelper.view_sub_task + "?id=" + id_sub_task, (Response.Listener<String>) response -> {
+                Gson g = new Gson();
+                SubTask_ subTask = g.fromJson(response, SubTask_.class);
+                String status = subTask.getStatus();
+                linkDownloadFile = (String) subTask.getFile();
+                tvTaskName.setText(subTask.getTask().getTaskName());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    tvDescription.setText(Html.fromHtml(subTask.getTask().getDescription(), Html.FROM_HTML_MODE_COMPACT));
+                } else {
+                    tvDescription.setText(Html.fromHtml(subTask.getTask().getDescription()));
+                }
+                tvAssignBy.setText(subTask.getAssignBy().getName());
+                tvDeadline.setText(subTask.getDeadline());
+                if(subTask.getKomentar() != null){
+                    tvKomentar.setText(subTask.getKomentar());
+                }
+                if(linkDownloadFile != null){
+                    if (linkDownloadFile.equals("-")) {
+                        btnDownload.setVisibility(View.GONE);
+                    }
+                }
+                if(status != null){
+                    tvStatus.setText(status);
+                    if (status.toLowerCase().equals("perlu tindak lanjut") == false) {
+                        form.setVisibility(View.GONE);
+                    }
+                }
+                pbLayout.setVisibility(View.GONE);
+                scrollView.setVisibility(View.VISIBLE);
+            }, error -> {
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
+            });
+            queue.add(request);
+        }
+    }
+
     public void close() {
-        Toast.makeText(getContext(), "coba", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "coba", Toast.LENGTH_SHORT).show();
         Fragment rm = getActivity().getSupportFragmentManager().findFragmentByTag("DetailSubTask");
         Fragment fragment = new SubTaskCompleteStaffFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

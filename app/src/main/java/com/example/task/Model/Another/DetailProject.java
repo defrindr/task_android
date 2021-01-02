@@ -1,11 +1,10 @@
 
-
-package com.example.task.Model;
+package com.example.task.Model.Another;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Project {
+public class DetailProject {
 
     @SerializedName("id")
     @Expose
@@ -21,10 +20,10 @@ public class Project {
     private String description;
     @SerializedName("assign_to")
     @Expose
-    private Integer assignTo;
+    private AssignTo_ assignTo;
     @SerializedName("status")
     @Expose
-    private Integer status;
+    private String status;
     @SerializedName("deadline")
     @Expose
     private String deadline;
@@ -85,19 +84,19 @@ public class Project {
         this.description = description;
     }
 
-    public Integer getAssignTo() {
+    public AssignTo_ getAssignTo() {
         return assignTo;
     }
 
-    public void setAssignTo(Integer assignTo) {
+    public void setAssignTo(AssignTo_ assignTo) {
         this.assignTo = assignTo;
     }
 
-    public Integer getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

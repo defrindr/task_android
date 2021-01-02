@@ -16,17 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Task"
         android:usesCleartextTraffic="true" >
-        <activity
-            android:name=".Activity.ManagerActivity"
-            android:label="@string/title_activity_manager"
-            android:theme="@style/Theme.Task.NoActionBar" >
-        </activity>
+        <service
+            android:name=".helpers.MyFirebaseMessagingService"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

@@ -1,4 +1,4 @@
-package com.example.task.ui.subTaskStaff;
+package com.example.task.ui.project;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,27 +16,27 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.task.Adapter.SubTaskAdapter;
-import com.example.task.Model.Staff.SubTask;
+import com.example.task.Adapter.ProjectAdapter;
+import com.example.task.Model.Another.Example;
 import com.example.task.R;
 import com.example.task.helpers.SessionManager;
 import com.example.task.helpers.UrlHelper;
 import com.google.gson.Gson;
 
-public class SubTaskStaffFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ProjectFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     SessionManager sessionManager;
     RecyclerView rv;
     SwipeRefreshLayout swipeRefreshLayout;
-    SubTaskAdapter adapter;
+    ProjectAdapter adapter;
     CoordinatorLayout pbLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_sub_task_staff, container, false);
+        View root = inflater.inflate(R.layout.fragment_project, container, false);
         sessionManager = new SessionManager(getActivity());
-        rv = root.findViewById(R.id.sub_task_recyclerView);
-        pbLayout = root.findViewById(R.id.news_pblayout);
-        swipeRefreshLayout = root.findViewById(R.id.sub_task_swipeRefresh);
+        rv = root.findViewById(R.id.project_recyclerView);
+        pbLayout = root.findViewById(R.id.project_pblayout);
+        swipeRefreshLayout = root.findViewById(R.id.project_swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.primaryColor,
                 android.R.color.holo_green_dark,
@@ -46,16 +46,11 @@ public class SubTaskStaffFragment extends Fragment implements SwipeRefreshLayout
         return root;
     }
 
-
-    /**
-     * Called when a swipe gesture triggers a refresh.
-     */
     @Override
     public void onRefresh() {
         requestSoal();
         swipeRefreshLayout.setRefreshing(false);
     }
-
 
     public  void requestSoal(){
         RequestQueue queue = Volley.newRequestQueue(getActivity());
@@ -65,10 +60,10 @@ public class SubTaskStaffFragment extends Fragment implements SwipeRefreshLayout
         StringRequest request = new StringRequest(Request.Method.GET, url_target, response -> {
             System.out.println(response);
             Gson g = new Gson();
-            SubTask subTask = g.fromJson(response, SubTask.class);
-            if(subTask.getSubTask().size() > 0){
+            Example subTask = g.fromJson(response, Example.class);
+            if(subTask.getProject().size() > 0){
                 Toast.makeText(getActivity(), "Loading Complete", Toast.LENGTH_SHORT).show();
-                adapter = new SubTaskAdapter(getActivity(), subTask.getSubTask());
+                adapter = new ProjectAdapter(getActivity(), subTask.getProject());
                 rv.setAdapter(adapter);
                 pbLayout.setVisibility(View.GONE);
             }

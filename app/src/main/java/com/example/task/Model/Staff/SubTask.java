@@ -1,5 +1,5 @@
 
-package com.example.task.Model;
+package com.example.task.Model.Staff;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

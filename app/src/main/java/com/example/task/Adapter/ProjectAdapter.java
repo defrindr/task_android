@@ -15,18 +15,18 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.task.Model.Staff.SubTask_;
-import com.example.task.ui.DetailSubTask.DetailSubTaskFragment;
+import com.example.task.Model.Another.Project;
 import com.example.task.R;
+import com.example.task.ui.DetailProject.DetailProject;
 
 import java.util.List;
 
-public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.MyViewHolder>{
-    private List<SubTask_> list_sub_task;
+public class ProjectAdapter extends RecyclerView.Adapter<ProjectAdapter.MyViewHolder>{
+    private List<Project> list_sub_task;
     private FragmentActivity c;
     private boolean clickable = true;
 
-    public SubTaskAdapter(FragmentActivity c, List<SubTask_> datum) {
+    public ProjectAdapter(FragmentActivity c, List<Project> datum) {
         this.c = c;
         this.list_sub_task = datum;
     }
@@ -34,7 +34,7 @@ public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.MyViewHo
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder (ViewGroup parent,int viewType){
-        View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_view_list_sub_task_staff, parent, false);
+        View mView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycle_view_list_project, parent, false);
         return new MyViewHolder(mView);
     }
 
@@ -43,9 +43,9 @@ public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.MyViewHo
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getTask().getDescription(), Html.FROM_HTML_MODE_COMPACT));
+            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getDescription(), Html.FROM_HTML_MODE_COMPACT));
         } else {
-            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getTask().getDescription()));
+            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getDescription()));
         }
         holder.mTextViewDate.setText(list_sub_task.get(position).getDeadline());
         holder.mTextStatus.setText(list_sub_task.get(position).getStatus());
@@ -56,9 +56,9 @@ public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.MyViewHo
             }else{
                 Bundle bundle=new Bundle();
 
-                bundle.putInt("id_sub_task", list_sub_task.get(position).getId());
+                bundle.putInt("id_project", list_sub_task.get(position).getId());
 
-                Fragment fragment = new DetailSubTaskFragment();
+                Fragment fragment = new DetailProject();
                 fragment.setArguments(bundle);
                 FragmentManager fragmentManager = c.getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -81,9 +81,9 @@ public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.MyViewHo
 
         MyViewHolder(View itemView) {
             super(itemView);
-            mTextViewJudul = itemView.findViewById(R.id.sub_task_recycleview_description);
-            mTextViewDate= itemView.findViewById(R.id.sub_task_recycleview_deadline);
-            mTextStatus= itemView.findViewById(R.id.sub_task_recycleview_status);
+            mTextViewJudul = itemView.findViewById(R.id.project_recycleview_description);
+            mTextViewDate= itemView.findViewById(R.id.project_recycleview_deadline);
+            mTextStatus= itemView.findViewById(R.id.project_recycleview_status);
         }
     }
 

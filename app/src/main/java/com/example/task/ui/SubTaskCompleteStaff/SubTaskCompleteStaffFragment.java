@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -18,17 +19,18 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.task.Adapter.SubTaskAdapter;
-import com.example.task.Model.SubTask;
+import com.example.task.Model.Staff.SubTask;
 import com.example.task.R;
 import com.example.task.helpers.SessionManager;
 import com.example.task.helpers.UrlHelper;
 import com.google.gson.Gson;
 
-public class SubTaskCompleteStaffFragment extends Fragment {
+public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     SessionManager sessionManager;
     RecyclerView rv;
     SubTaskAdapter adapter;
     CoordinatorLayout pbLayout;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -36,8 +38,20 @@ public class SubTaskCompleteStaffFragment extends Fragment {
         sessionManager = new SessionManager(getActivity());
         rv = root.findViewById(R.id.sub_task_recyclerView);
         pbLayout = root.findViewById(R.id.news_pblayout);
+        swipeRefreshLayout = root.findViewById(R.id.sub_task_swipeRefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
         requestSoal();
         return root;
+    }
+
+
+    /**
+     * Called when a swipe gesture triggers a refresh.
+     */
+    @Override
+    public void onRefresh() {
+        requestSoal();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -53,7 +67,7 @@ public class SubTaskCompleteStaffFragment extends Fragment {
                 Gson g = new Gson();
                 SubTask subTask = g.fromJson(response, SubTask.class);
                 if(subTask.getSubTask().size() > 0){
-                    Toast.makeText(getActivity(), subTask.getSubTask().toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Loading Complete", Toast.LENGTH_SHORT).show();
                     adapter = new SubTaskAdapter(getActivity(), subTask.getSubTask());
                     rv.setAdapter(adapter);
                     pbLayout.setVisibility(View.GONE);

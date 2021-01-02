@@ -1,9 +1,10 @@
-package com.example.task.Model;
+
+package com.example.task.Model.Another;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Task {
+public class TasksClosed {
 
     @SerializedName("id")
     @Expose
@@ -19,7 +20,7 @@ public class Task {
     private String description;
     @SerializedName("tanggal_acc")
     @Expose
-    private Object tanggalAcc;
+    private String tanggalAcc;
     @SerializedName("deadline")
     @Expose
     private String deadline;
@@ -65,11 +66,11 @@ public class Task {
         this.description = description;
     }
 
-    public Object getTanggalAcc() {
+    public String getTanggalAcc() {
         return tanggalAcc;
     }
 
-    public void setTanggalAcc(Object tanggalAcc) {
+    public void setTanggalAcc(String tanggalAcc) {
         this.tanggalAcc = tanggalAcc;
     }
 
