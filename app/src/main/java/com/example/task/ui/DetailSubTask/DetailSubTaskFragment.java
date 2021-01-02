@@ -3,10 +3,12 @@ package com.example.task.ui.DetailSubTask;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +27,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,16 +43,20 @@ import com.example.task.helpers.VolleyMultipartRequest;
 import com.example.task.ui.SubTaskCompleteStaff.SubTaskCompleteStaffFragment;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
-import static android.provider.MediaStore.Images.Media.getBitmap;
 
 public class DetailSubTaskFragment extends Fragment {
     SessionManager sessionManager;
@@ -61,6 +70,9 @@ public class DetailSubTaskFragment extends Fragment {
     private static final int REQUEST_PERMISSIONS = 100;
     private static final int PICK_IMAGE_REQUEST =1 ;
     private Bitmap bitmap;
+    private RequestQueue rQueue;
+    private ArrayList<HashMap<String, String>> arraylist;
+    String url = "https://www.google.com";
 
     public DetailSubTaskFragment() {
 
@@ -129,74 +141,129 @@ public class DetailSubTaskFragment extends Fragment {
 
     private void showFileChooser() {
         Intent intent = new Intent();
-        intent.setType("*/*");
+        intent.setType("application/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.e("resultCode", String.valueOf(resultCode));
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri picUri = data.getData();
+        if (resultCode == RESULT_OK) {
+            // Get the Uri of the selected file
+            Uri uri = data.getData();
+            String uriString = uri.toString();
+            File myFile = new File(uriString);
+            String path = myFile.getAbsolutePath();
+            String displayName = null;
+
+            if (uriString.startsWith("content://")) {
+                Cursor cursor = null;
                 try {
-                    Log.d("picUri", String.valueOf(picUri));
-                    bitmap = getBitmap(getContext().getContentResolver(), picUri);
-                    uploadBitmap(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        Log.d("nameeeee>>>>  ",displayName);
+
+                        uploadPDF(displayName,uri);
+                    }
+                } finally {
+                    cursor.close();
                     finishAction();
                 }
-        }else{
-            Toast.makeText(getContext(), "Tidak dapat upload file", Toast.LENGTH_SHORT).show();
-            Log.e("Else", "Tidak dapat upload file");
+            } else if (uriString.startsWith("file://")) {
+                displayName = myFile.getName();
+                Log.d("nameeeee>>>>  ",displayName);
+                finishAction();
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+    private void uploadPDF(final String pdfname, Uri pdffile){
+
+        InputStream iStream = null;
+        try {
+
+            iStream = getActivity().getContentResolver().openInputStream(pdffile);
+            final byte[] inputData = getBytes(iStream);
+
+            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, UrlHelper.ajukan_sub_task+"?user_id="+sessionManager.getUserDetail().get("id_user")+"&id="+ id_sub_task,
+                    response -> {
+                        Log.d("ressssssoo",new String(response.data));
+                        rQueue.getCache().clear();
+                        try {
+                            JSONObject obj = new JSONObject(new String(response.data));
+                            Toast.makeText(getActivity(), obj.getString("message"), Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                        finishAction();
+                        refreshPage();
+                    },
+                    error -> {
+                        Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.e("GotError",""+error.getMessage());
+                        finishAction();
+                    }) {
+
+                /*
+                 * If you want to add more parameters with the image
+                 * you can do it here
+                 * here we have only one parameter with the image
+                 * which is tags
+                 * */
+
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+                    String description = (etDescription.getText().toString().equals("")) ? "-" : etDescription.getText().toString();
+                    params.put("SubTask[description]", description);
+
+                    return params;
+                }
+
+                /*
+                 *pass files using below method
+                 * */
+                @Override
+                protected Map<String, DataPart> getByteData() {
+                    Map<String, DataPart> params = new HashMap<>();
+                    params.put("SubTask[file]", new DataPart(pdfname ,inputData));
+                    return params;
+                }
+            };
+
+
+            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    0,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            rQueue = Volley.newRequestQueue(getActivity());
+            rQueue.add(volleyMultipartRequest);
+
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            finishAction();
+        } catch (IOException e) {
+            e.printStackTrace();
             finishAction();
         }
     }
 
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
 
-    public byte[] getFileDataFromDrawable(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
-        return byteArrayOutputStream.toByteArray();
-    }
-
-    private void uploadBitmap(final Bitmap bitmap) {
-
-        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, UrlHelper.ajukan_sub_task+"?user_id="+sessionManager.getUserDetail().get("id_user")+"&id="+ id_sub_task,
-                response -> {
-                    try {
-                        JSONObject obj = new JSONObject(new String(response.data));
-                        Toast.makeText(getContext(), obj.getString("message"), Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e) {
-                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-                    finishAction();
-                    refreshPage();
-                },
-                error -> {
-                    Toast.makeText(getContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.e("GotError",""+error.getMessage());
-                    finishAction();
-                }) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                String description = (etDescription.getText().toString().equals("")) ? "-" : etDescription.getText().toString();
-                params.put("SubTask[description]", description);
-
-                return params;
-            }
-            @Override
-            protected Map<String, DataPart> getByteData() {
-                Map<String, DataPart> params = new HashMap<>();
-                long imagename = System.currentTimeMillis();
-                params.put("SubTask[file]", new DataPart(imagename + ".png", getFileDataFromDrawable(bitmap)));
-                return params;
-            }
-        };
-        Volley.newRequestQueue(getContext()).add(volleyMultipartRequest);
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 
     private void refreshPage() {
