@@ -27,15 +27,13 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/project.swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/offset10dp"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/offset10dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/project.recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             app:layoutManager="LinearLayoutManager"
             tools:listitem="@layout/recycle_view_list_sub_task_staff" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

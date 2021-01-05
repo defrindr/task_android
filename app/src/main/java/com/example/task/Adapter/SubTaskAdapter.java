@@ -43,9 +43,9 @@ public class SubTaskAdapter extends RecyclerView.Adapter<SubTaskAdapter.MyViewHo
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getTask().getDescription(), Html.FROM_HTML_MODE_COMPACT));
+            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getTask().getTaskName(), Html.FROM_HTML_MODE_COMPACT));
         } else {
-            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getTask().getDescription()));
+            holder.mTextViewJudul.setText(Html.fromHtml(list_sub_task.get(position).getTask().getTaskName()));
         }
         holder.mTextViewDate.setText(list_sub_task.get(position).getDeadline());
         holder.mTextStatus.setText(list_sub_task.get(position).getStatus());

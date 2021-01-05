@@ -71,7 +71,8 @@ public class LoginActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }else if(role.equals(Constant.ROLE_DIRECTOR)){
-
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
             }else if(role.equals(Constant.ROLE_CEO)){
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);

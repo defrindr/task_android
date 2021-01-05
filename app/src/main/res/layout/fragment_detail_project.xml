@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:clickable="true"
     tools:context=".ui.DetailProject.DetailProject">
@@ -21,12 +22,16 @@
         android:id="@+id/project.detail.scrollview.container"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:padding="@dimen/offset20dp"
         android:layout_height="match_parent">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:padding="@dimen/offset20dp"
+            android:layout_height="wrap_content">
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="400dp" />
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -128,6 +133,19 @@
                         android:layout_height="wrap_content"
                         android:text="status" />
                 </LinearLayout>
+
+                <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                    android:id="@+id/project.detail.task.swipeRefresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_margin="@dimen/offset10dp">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/project.detail.taskRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layoutManager="LinearLayoutManager"
+                        tools:listitem="@layout/recycle_view_list_task" />
+                </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/offset10dp"
-    android:padding="@dimen/offset20dp"
     android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:paddingTop="@dimen/offset10dp"
+        android:paddingBottom="@dimen/offset10dp"
         android:layout_height="wrap_content">
 
         <TextView
@@ -43,6 +43,14 @@
             app:layout_constraintEnd_toEndOf="@+id/sub_task.recycleview.deadline"
             app:layout_constraintStart_toStartOf="@+id/sub_task.recycleview.deadline"
             app:layout_constraintTop_toBottomOf="@+id/sub_task.recycleview.deadline" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/offset10dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
 
 </LinearLayout>

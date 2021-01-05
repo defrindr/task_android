@@ -15,13 +15,13 @@ public class Example {
     private DetailProject detailProject;
     @SerializedName("tasks")
     @Expose
-    private List<Object> tasks = null;
+    private List<TaskAssign> tasks = null;
     @SerializedName("tasksSubmitted")
     @Expose
-    private List<Object> tasksSubmitted = null;
+    private List<TaskAssign> tasksSubmitted = null;
     @SerializedName("tasksClosed")
     @Expose
-    private List<TasksClosed> tasksClosed = null;
+    private List<TaskAssign> tasksClosed = null;
     @SerializedName("taskAssign")
     @Expose
     private List<TaskAssign> taskAssign = null;
@@ -45,27 +45,27 @@ public class Example {
         this.detailProject = detailProject;
     }
 
-    public List<Object> getTasks() {
+    public List<TaskAssign> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<Object> tasks) {
+    public void setTasks(List<TaskAssign> tasks) {
         this.tasks = tasks;
     }
 
-    public List<Object> getTasksSubmitted() {
+    public List<TaskAssign> getTasksSubmitted() {
         return tasksSubmitted;
     }
 
-    public void setTasksSubmitted(List<Object> tasksSubmitted) {
+    public void setTasksSubmitted(List<TaskAssign> tasksSubmitted) {
         this.tasksSubmitted = tasksSubmitted;
     }
 
-    public List<TasksClosed> getTasksClosed() {
+    public List<TaskAssign> getTasksClosed() {
         return tasksClosed;
     }
 
-    public void setTasksClosed(List<TasksClosed> tasksClosed) {
+    public void setTasksClosed(List<TaskAssign> tasksClosed) {
         this.tasksClosed = tasksClosed;
     }
 

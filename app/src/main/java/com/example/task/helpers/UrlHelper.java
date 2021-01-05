@@ -1,7 +1,7 @@
 package com.example.task.helpers;
 
 public class UrlHelper {
-    public static String ip_address = "http://192.168.1.2";
+    public static String ip_address = "http://192.168.43.206";
     public static String base_url = ip_address+"/task/web";
     public static String base_api = base_url+"/api";
     public static String base_user = base_api+"/user";

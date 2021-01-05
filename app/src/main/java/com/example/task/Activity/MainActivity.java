@@ -3,6 +3,8 @@ package com.example.task.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,12 +27,15 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.HashMap;
 
 import static android.app.PendingIntent.getActivity;
+import static com.example.task.helpers.Constant.LIST_ROLE;
+import static java.lang.Integer.parseInt;
 
 public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     SessionManager sessionManager;
     NavigationView navigationView;
     NavController navController;
+    TextView txtUsername, txtRole;
     NavGraph navGraph;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +48,14 @@ public class MainActivity extends AppCompatActivity {
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
+        View headerNav = navigationView.getHeaderView(0);
+        txtUsername = headerNav.findViewById(R.id.display_username);
+        txtRole = headerNav.findViewById(R.id.display_role);
         navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(menuItem -> {
             logout();
             return true;
         });
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_sub_task, R.id.nav_project, R.id.nav_slideshow,  R.id.nav_sub_task_complete)
                 .setDrawerLayout(drawer)
@@ -84,8 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void checkRole(){
         HashMap<String, String> detail_user = sessionManager.getUserDetail();
+        String username = detail_user.get("username");
         String role = detail_user.get("role");
         if(role != null){
+            txtUsername.setText(username);
+            txtRole.setText(LIST_ROLE.get(parseInt(role)));
             if(role.equals(Constant.ROLE_STAFF)){
                 navGraph.setStartDestination(R.id.nav_sub_task);
                 navigationView.getMenu().findItem(R.id.nav_project).setVisible(false);
@@ -94,14 +106,17 @@ public class MainActivity extends AppCompatActivity {
                 navGraph.setStartDestination(R.id.nav_project);
                 navigationView.getMenu().findItem(R.id.nav_sub_task).setVisible(false);
                 navigationView.getMenu().findItem(R.id.nav_sub_task_complete).setVisible(false);
+                navigationView.getMenu().findItem(R.id.nav_slideshow).setVisible(false);
             }else if(role.equals(Constant.ROLE_DIRECTOR)){
                 navGraph.setStartDestination(R.id.nav_project);
                 navigationView.getMenu().findItem(R.id.nav_sub_task).setVisible(false);
                 navigationView.getMenu().findItem(R.id.nav_sub_task_complete).setVisible(false);
+                navigationView.getMenu().findItem(R.id.nav_slideshow).setVisible(false);
             }else if(role.equals(Constant.ROLE_CEO)){
                 navGraph.setStartDestination(R.id.nav_project);
                 navigationView.getMenu().findItem(R.id.nav_sub_task).setVisible(false);
                 navigationView.getMenu().findItem(R.id.nav_sub_task_complete).setVisible(false);
+                navigationView.getMenu().findItem(R.id.nav_slideshow).setVisible(false);
             }
             navController.setGraph(navGraph);
         }
