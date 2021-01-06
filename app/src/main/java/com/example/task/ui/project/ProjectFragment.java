@@ -1,5 +1,6 @@
 package com.example.task.ui.project;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -29,6 +31,7 @@ public class ProjectFragment extends Fragment implements SwipeRefreshLayout.OnRe
     SwipeRefreshLayout swipeRefreshLayout;
     ProjectAdapter adapter;
     CoordinatorLayout pbLayout;
+    FragmentActivity main;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class ProjectFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
                 android.R.color.holo_blue_dark);
+        main = getActivity();
         requestSoal();
         return root;
     }
@@ -62,14 +66,14 @@ public class ProjectFragment extends Fragment implements SwipeRefreshLayout.OnRe
             Gson g = new Gson();
             Example subTask = g.fromJson(response, Example.class);
             if(subTask.getProject().size() > 0){
-                Toast.makeText(getActivity(), "Loading Complete", Toast.LENGTH_SHORT).show();
-                adapter = new ProjectAdapter(getActivity(), subTask.getProject());
+                Toast.makeText(main, "Loading Complete", Toast.LENGTH_SHORT).show();
+                adapter = new ProjectAdapter(main, subTask.getProject());
                 rv.setAdapter(adapter);
                 pbLayout.setVisibility(View.GONE);
             }
         }, error -> {
             System.out.println(error);
-            Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(main, error.toString(), Toast.LENGTH_SHORT).show();
         });
         queue.add(request);
     }

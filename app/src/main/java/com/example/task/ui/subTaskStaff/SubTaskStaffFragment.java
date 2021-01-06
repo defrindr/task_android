@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -29,6 +30,7 @@ public class SubTaskStaffFragment extends Fragment implements SwipeRefreshLayout
     SwipeRefreshLayout swipeRefreshLayout;
     SubTaskAdapter adapter;
     CoordinatorLayout pbLayout;
+    FragmentActivity main;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class SubTaskStaffFragment extends Fragment implements SwipeRefreshLayout
                 android.R.color.holo_green_dark,
                 android.R.color.holo_orange_dark,
                 android.R.color.holo_blue_dark);
+        main = getActivity();
         requestSoal();
         return root;
     }
@@ -58,7 +61,7 @@ public class SubTaskStaffFragment extends Fragment implements SwipeRefreshLayout
 
 
     public  void requestSoal(){
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        RequestQueue queue = Volley.newRequestQueue(main);
         String param_role_id = sessionManager.getUserDetail().get("role");
         String param_user_id = sessionManager.getUserDetail().get("id_user");
         String url_target = UrlHelper.base_task+"?role_id="+param_role_id+"&user_id="+param_user_id;
@@ -67,14 +70,14 @@ public class SubTaskStaffFragment extends Fragment implements SwipeRefreshLayout
             Gson g = new Gson();
             SubTask subTask = g.fromJson(response, SubTask.class);
             if(subTask.getSubTask().size() > 0){
-                Toast.makeText(getActivity(), "Loading Complete", Toast.LENGTH_SHORT).show();
-                adapter = new SubTaskAdapter(getActivity(), subTask.getSubTask());
+                Toast.makeText(main, "Loading Complete", Toast.LENGTH_SHORT).show();
+                adapter = new SubTaskAdapter(main, subTask.getSubTask());
                 rv.setAdapter(adapter);
                 pbLayout.setVisibility(View.GONE);
             }
         }, error -> {
             System.out.println(error);
-            Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(main, error.toString(), Toast.LENGTH_SHORT).show();
         });
         queue.add(request);
     }

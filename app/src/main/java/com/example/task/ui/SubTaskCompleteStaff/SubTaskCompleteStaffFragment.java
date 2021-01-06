@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -31,6 +32,7 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
     SubTaskAdapter adapter;
     CoordinatorLayout pbLayout;
     SwipeRefreshLayout swipeRefreshLayout;
+    FragmentActivity main;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
         pbLayout = root.findViewById(R.id.news_pblayout);
         swipeRefreshLayout = root.findViewById(R.id.sub_task_swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
+        main = getActivity();
         requestSoal();
         return root;
     }
@@ -57,7 +60,7 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
 
 
     public  void requestSoal(){
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        RequestQueue queue = Volley.newRequestQueue(main);
         String param_role_id = sessionManager.getUserDetail().get("role");
         String param_user_id = sessionManager.getUserDetail().get("id_user");
         String url_target = UrlHelper.base_task+"?role_id="+param_role_id+"&user_id="+param_user_id+"&complete";
@@ -67,8 +70,8 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
                 Gson g = new Gson();
                 SubTask subTask = g.fromJson(response, SubTask.class);
                 if(subTask.getSubTask().size() > 0){
-                    Toast.makeText(getActivity(), "Loading Complete", Toast.LENGTH_SHORT).show();
-                    adapter = new SubTaskAdapter(getActivity(), subTask.getSubTask());
+                    Toast.makeText(main, "Loading Complete", Toast.LENGTH_SHORT).show();
+                    adapter = new SubTaskAdapter(main, subTask.getSubTask());
                     rv.setAdapter(adapter);
                     pbLayout.setVisibility(View.GONE);
                 }
@@ -77,7 +80,7 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
             @Override
             public void onErrorResponse(VolleyError error) {
                 System.out.println(error);
-                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(main, error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
         queue.add(request);
