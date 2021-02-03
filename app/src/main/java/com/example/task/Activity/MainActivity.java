@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         if(sessionManager.is_login()){
             HashMap<String, String> detail_user = sessionManager.getUserDetail();
             String role = detail_user.get("role");
+
             if(role != null){
                 sessionManager.logout();
                 redirectLogin();

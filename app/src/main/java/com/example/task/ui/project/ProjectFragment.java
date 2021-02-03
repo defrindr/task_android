@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +32,7 @@ public class ProjectFragment extends Fragment implements SwipeRefreshLayout.OnRe
     SwipeRefreshLayout swipeRefreshLayout;
     ProjectAdapter adapter;
     CoordinatorLayout pbLayout;
+    LinearLayout dataTidakAda;
     FragmentActivity main;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -40,6 +42,7 @@ public class ProjectFragment extends Fragment implements SwipeRefreshLayout.OnRe
         rv = root.findViewById(R.id.project_recyclerView);
         pbLayout = root.findViewById(R.id.project_pblayout);
         swipeRefreshLayout = root.findViewById(R.id.project_swipeRefresh);
+        dataTidakAda = root.findViewById(R.id.project_dataTidakAda);
         swipeRefreshLayout.setOnRefreshListener(this);
         swipeRefreshLayout.setColorSchemeResources(R.color.primaryColor,
                 android.R.color.holo_green_dark,
@@ -69,6 +72,9 @@ public class ProjectFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 Toast.makeText(main, "Loading Complete", Toast.LENGTH_SHORT).show();
                 adapter = new ProjectAdapter(main, subTask.getProject());
                 rv.setAdapter(adapter);
+                pbLayout.setVisibility(View.GONE);
+            }else{
+                dataTidakAda.setVisibility(View.VISIBLE);
                 pbLayout.setVisibility(View.GONE);
             }
         }, error -> {

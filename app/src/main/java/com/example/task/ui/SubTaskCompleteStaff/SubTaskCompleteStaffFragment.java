@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +33,7 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
     SubTaskAdapter adapter;
     CoordinatorLayout pbLayout;
     SwipeRefreshLayout swipeRefreshLayout;
+    LinearLayout dataTidakAda;
     FragmentActivity main;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -40,6 +42,7 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
         sessionManager = new SessionManager(getActivity());
         rv = root.findViewById(R.id.sub_task_recyclerView);
         pbLayout = root.findViewById(R.id.news_pblayout);
+        dataTidakAda = root.findViewById(R.id.subtask_dataTidakAda);
         swipeRefreshLayout = root.findViewById(R.id.sub_task_swipeRefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
         main = getActivity();
@@ -73,6 +76,9 @@ public class SubTaskCompleteStaffFragment extends Fragment implements SwipeRefre
                     Toast.makeText(main, "Loading Complete", Toast.LENGTH_SHORT).show();
                     adapter = new SubTaskAdapter(main, subTask.getSubTask());
                     rv.setAdapter(adapter);
+                    pbLayout.setVisibility(View.GONE);
+                }else{
+                    dataTidakAda.setVisibility(View.VISIBLE);
                     pbLayout.setVisibility(View.GONE);
                 }
             }

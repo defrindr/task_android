@@ -132,6 +132,7 @@ public class DetailSubTaskFragment extends Fragment {
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                             REQUEST_PERMISSIONS);
                 }
+                finishAction();
             } else {
                 Log.e("Else", "Else");
                 showFileChooser();
@@ -190,7 +191,7 @@ public class DetailSubTaskFragment extends Fragment {
 
             VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, UrlHelper.ajukan_sub_task+"?user_id="+sessionManager.getUserDetail().get("id_user")+"&id="+ id_sub_task,
                     response -> {
-                        Log.d("ressssssoo",new String(response.data));
+//                        Log.d("ressssssoo",new String(response.data));
                         rQueue.getCache().clear();
                         try {
                             JSONObject obj = new JSONObject(new String(response.data));
@@ -275,7 +276,8 @@ public class DetailSubTaskFragment extends Fragment {
                 Gson g = new Gson();
                 SubTask_ subTask = g.fromJson(response, SubTask_.class);
                 String status = subTask.getStatus();
-                linkDownloadFile = (String) subTask.getFile();
+                linkDownloadFile = subTask.getFile();
+                System.out.println("link download : "+linkDownloadFile);
                 tvTaskName.setText(subTask.getTask().getTaskName());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     tvDescription.setText(Html.fromHtml(subTask.getTask().getDescription(), Html.FROM_HTML_MODE_COMPACT));
@@ -287,10 +289,8 @@ public class DetailSubTaskFragment extends Fragment {
                 if(subTask.getKomentar() != null){
                     tvKomentar.setText(subTask.getKomentar());
                 }
-                if(linkDownloadFile != null){
-                    if (linkDownloadFile.equals("-")) {
+                if(linkDownloadFile == null || linkDownloadFile.equals("-")) {
                         btnDownload.setVisibility(View.GONE);
-                    }
                 }
                 if(status != null){
                     tvStatus.setText(status);
